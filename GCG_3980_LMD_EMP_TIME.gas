@@ -1,0 +1,508 @@
+Program.Sub.ScreenSU.Start
+gui.Form1..create
+gui.Form1..caption("Select Week Range")
+gui.Form1..size(4860,1875)
+gui.Form1..minx(0)
+gui.Form1..miny(0)
+gui.Form1..position(0,0)
+gui.Form1..event(unload,form1_unload)
+gui.Form1..alwaysontop(False)
+gui.Form1..fontname("Arial")
+gui.Form1..fontsize(8)
+gui.Form1..forecolor(0)
+gui.Form1..fontstyle(,,,,)
+gui.Form1..BackColor(-2147483633)
+gui.Form1..controlbox(True)
+gui.Form1..maxbutton(True)
+gui.Form1..minbutton(True)
+gui.Form1..mousepointer(0)
+gui.Form1..moveable(True)
+gui.Form1..sizeable(False)
+gui.Form1..ShowInTaskBar(True)
+gui.Form1..titlebar(True)
+gui.Form1.lbl1.create(label,"Ending Date(Saturday)",True,1935,255,1,2500,100,True,0,Arial,8,-2147483633,0)
+gui.Form1.lbl1.defaultvalue("")
+gui.Form1.lbl1.controlgroup(0)
+gui.Form1.lbl2.create(label,"Beginning Date(Sunday)",True,1935,255,1,200,100,True,0,Arial,8,-2147483633,0)
+gui.Form1.lbl2.defaultvalue("")
+gui.Form1.lbl2.controlgroup(0)
+gui.Form1.datepickerBegDate.create(datepicker)
+gui.Form1.datepickerBegDate.visible(True)
+gui.Form1.datepickerBegDate.size(1935,285)
+gui.Form1.datepickerBegDate.zorder(0)
+gui.Form1.datepickerBegDate.position(200,300)
+gui.Form1.datepickerBegDate.enabled(True)
+gui.Form1.datepickerBegDate.event(change,datepickerbegdate_change)
+gui.Form1.datepickerBegDate.checkbox(False)
+gui.Form1.datepickerBegDate.defaultvalue("")
+gui.Form1.datepickerBegDate.controlgroup(0)
+gui.Form1.datepickerEndDate.create(datepicker)
+gui.Form1.datepickerEndDate.visible(True)
+gui.Form1.datepickerEndDate.size(1935,285)
+gui.Form1.datepickerEndDate.zorder(0)
+gui.Form1.datepickerEndDate.position(2500,300)
+gui.Form1.datepickerEndDate.enabled(True)
+gui.Form1.datepickerEndDate.event(change,datepickerenddate_change)
+gui.Form1.datepickerEndDate.checkbox(False)
+gui.Form1.datepickerEndDate.defaultvalue("")
+gui.Form1.datepickerEndDate.controlgroup(0)
+gui.Form1.cmdPrint.create(button)
+gui.Form1.cmdPrint.caption("Print")
+gui.Form1.cmdPrint.visible(True)
+gui.Form1.cmdPrint.size(1245,375)
+gui.Form1.cmdPrint.zorder(0)
+gui.Form1.cmdPrint.position(200,700)
+gui.Form1.cmdPrint.enabled(True)
+gui.Form1.cmdPrint.fontname("Arial")
+gui.Form1.cmdPrint.fontsize(8)
+gui.Form1.cmdPrint.event(click,cmdprint_click)
+gui.Form1.cmdPrint.defaultvalue("")
+gui.Form1.cmdPrint.controlgroup(0)
+
+
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+
+Variable.Global.iBILogID.Declare(Long,0)
+Variable.Global.iBIRunID.Declare(Long,0)
+Variable.Global.sParamVals.Declare(String)
+Variable.UDT.uReport.Define("EMPL",String)
+Variable.UDT.uReport.Define("EMP_NAME",String)
+Variable.UDT.uReport.Define("BIRUNID",Long)
+Variable.UDT.uReport.Define("DAY1",String)
+Variable.UDT.uReport.Define("DAY2",String)
+Variable.UDT.uReport.Define("DAY3",String)
+Variable.UDT.uReport.Define("DAY4",String)
+Variable.UDT.uReport.Define("DAY5",String)
+Variable.UDT.uReport.Define("DAY6",String)
+Variable.UDT.uReport.Define("DAY7",String)
+Variable.UDT.uReport.Define("DAY2_HOURS",Float)
+Variable.UDT.uReport.Define("DAY3_HOURS",Float)
+Variable.UDT.uReport.Define("DAY4_HOURS",Float)
+Variable.UDT.uReport.Define("DAY5_HOURS",Float)
+Variable.UDT.uReport.Define("DAY6_HOURS",Float)
+Variable.UDT.uReport.Define("DAY7_HOURS",Float)
+Variable.UDT.uReport.Define("DAY1_HOURS",Float)
+Variable.uGlobal.uReport.Declare("uReport")
+Variable.UDT.uEmp.Define("EMPL",String,EMPL)
+Variable.UDT.uEmp.Define("EMPLOYEE",String,EMPLOYEE)
+Variable.uGlobal.uEmp.Declare("uEmp")
+Variable.UDT.uHolidays.Define("HOL",String)
+Variable.uGlobal.uHols.Declare("uHolidays")
+Variable.UDT.uDetail.Define("empl",String,empl)
+Variable.UDT.uDetail.Define("employee",String,employee)
+Variable.UDT.uDetail.Define("charge_date",String,charge_date)
+Variable.UDT.uDetail.Define("tot_hrs",Float,tot_hrs)
+Variable.uGlobal.uDetail.Declare("uDetail")
+Variable.UDT.uDetCopy.Define("empl",String)
+Variable.UDT.uDetCopy.Define("employee",String)
+Variable.UDT.uDetCopy.Define("charge_date",String)
+Variable.UDT.uDetCopy.Define("tot_hrs",Float)
+Variable.uGlobal.uDetCopy.Declare("uDetCopy")
+Variable.UDT.uDays.Define("DAY",String)
+Variable.uGlobal.uDays.Declare("uDays")
+
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+F.ODBC.Connection!conX.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass,7200)
+
+Gui.Form1..Show
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3980_LMD_EMP_TIME.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Form1_unload)
+Function.Intrinsic.Control.EndIf
+
+Program.Sub.Main.End
+
+program.sub.form1_unload.start
+F.Intrinsic.Control.End
+
+program.sub.form1_unload.end
+
+program.sub.cmdprint_click.start
+F.Intrinsic.Control.SetErrorHandler("cmdprint_click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+V.Local.dSDate.Declare(Date)
+V.Local.dEDate.Declare(Date)
+V.Local.sDay1.Declare(String)
+V.Local.sDay2.Declare(String)
+V.Local.sDay3.Declare(String)
+V.Local.sDay4.Declare(String)
+V.Local.sDay5.Declare(String)
+V.Local.sDay6.Declare(String)
+V.Local.sDay7.Declare(String)
+V.Local.dDay1.Declare(Date)
+V.Local.dDay2.Declare(Date)
+V.Local.dDay3.Declare(Date)
+V.Local.dDay4.Declare(Date)
+V.Local.dDay5.Declare(Date)
+V.Local.dDay6.Declare(Date)
+V.Local.dDay7.Declare(Date)
+V.Local.dRet.Declare(Date)
+V.Local.dRet2.Declare(Date)
+V.Local.sSql.Declare(String)
+V.Local.sRet.Declare(String)
+V.Local.iRet.Declare(Long)
+V.Local.sDate.Declare(String)
+V.Local.eDate.Declare(String)
+V.Local.iHol.Declare(Float)
+V.Local.iHrs.Declare(Float)
+V.Local.iTtl.Declare(Float)
+V.Local.i.Declare(Long)
+V.Local.i2.Declare(Long)
+V.Local.i3.Declare(Long)
+V.Local.day1hours.Declare(Float)
+V.Local.day2hours.Declare(Float)
+V.Local.day3hours.Declare(Float)
+V.Local.day4hours.Declare(Float)
+V.Local.day5hours.Declare(Float)
+V.Local.day6hours.Declare(Float)
+V.Local.day7hours.Declare(Float)
+V.Local.sReportParams.Declare(String)
+V.Local.sReportVals.Declare(String)
+V.Local.shol.Declare(String)
+V.Local.iday.Declare(Float)
+V.Local.sEmployee.Declare(String)
+V.Local.sEmpl.Declare(String)
+'F.Intrinsic.Debug.InvokeDebugger
+'F.Intrinsic.Debug.Stop
+
+F.Global.BI.GetRunID(V.Global.iBIRunID)
+F.Global.BI.startLogging(v.Global.iBIRunID,v.Local.iRPTID,-1,"",v.Global.iBILogID)
+
+V.uGlobal.uDays.Redim(0,0)
+V.uGlobal.uReport.Redim(-1,-1)
+V.uGlobal.uHols.Redim(-1,-1)
+V.uGlobal.uEmp.Redim(-1,-1)
+V.uGlobal.uDetail.Redim(-1,-1)
+
+V.Local.dSDate.Set(V.Screen.Form1!datepickerBegDate.Value)
+V.Local.dEDate.Set(V.Screen.Form1!datepickerEndDate.Value)
+
+'get beginning and end days of week Sunday and Saturday's Date Values
+V.Local.sDate.Set(V.Screen.Form1!datepickerBegDate.Value)
+V.Local.eDate.Set(V.Screen.Form1!datepickerEndDate.Value)
+F.Intrinsic.Date.beginningofweek(V.Local.DSDate,V.Local.dRet)
+F.Intrinsic.Date.endofweek(V.Local.DEDate,V.Local.dRet2)
+
+
+'compare selection criteria to Sunday and Saturdays's date value if beginning does not match sundays date value or ending <> Saturday's value prompt user to correct selection
+F.Intrinsic.Control.If(V.Local.DSDate,<>,V.Local.dRet,"OR",V.Local.DEDate,<>,V.Local.dRet2)
+	F.Intrinsic.UI.Msgbox("Must Select Beginning of week and End of Week as criteria(Saturday-Sunday)","")
+	Gui.Form1..Show
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.Else
+
+'wait status window
+	Gui.Form1..Visible(false)
+	F.Intrinsic.UI.InvokeWaitDialog("Loading...Please Wait","")
+'formate date for pervasive date format selection purposes
+	F.Intrinsic.String.Format(V.Local.sDate,"YYYY-MM-DD",V.Local.sDate)
+	F.Intrinsic.String.Format(V.Local.eDate,"YYYY-MM-DD",V.Local.eDate)
+
+'select distinct employee numbers that fall in criteria; if records exist load to UDT and proceed, else prompt user no records exist and can alter selection criteria
+	F.Intrinsic.String.Concat("select empl,employee,charge_date,sum(hours_worked) as tot_hrs from v_job_detail where charge_date between '",V.Local.sDate,"' and '",V.Local.eDate,"' group by empl,employee,charge_date order by charge_date",V.Local.sSql)
+	F.Intrinsic.UI.ChangeWaitStatus("Loading Report...")
+	F.ODBC.Connection!conX.OpenRecordsetRO("rst",V.Local.sSql)
+	F.Intrinsic.Control.If(V.ODBC.conX!rst.EOF,<>,True)
+		F.Intrinsic.Variable.LoadUDTFromRecordset("conX","rst","v.uGlobal.uDetail",False)
+		F.ODBC.conX!rst.Close
+		
+
+'set date values for each day of the week within range
+		V.Local.dDay1.Set(V.Local.DSDate)
+		V.Local.sDay1.Set(V.Local.dDay1)
+		F.Intrinsic.Date.DateAdd("D",1,V.Local.dSDate,V.Local.dDay2)
+		V.Local.sDay2.Set(V.Local.dDay2)
+		F.Intrinsic.Date.DateAdd("D",1,V.Local.dDay2,V.Local.dDay3)
+		V.Local.sDay3.Set(V.Local.dDay3)
+		F.Intrinsic.Date.DateAdd("D",1,V.Local.dDay3,V.Local.dDay4)
+		V.Local.sDay4.set(V.Local.dDay4)
+		F.Intrinsic.Date.DateAdd("D",1,V.Local.dDay4,V.Local.dDay5)
+		V.Local.sDay5.Set(V.Local.dDay5)
+		F.Intrinsic.Date.DateAdd("D",1,V.Local.dDay5,V.Local.dDay6)
+		V.Local.sDay6.Set(V.local.dDay6)
+		F.Intrinsic.Date.DateAdd("D",1,V.Local.dDay6,V.Local.dDay7)
+		V.Local.sDay7.Set(V.Local.dDay7)
+		
+		F.Intrinsic.String.Format(V.Local.sDay1,"M/D/YYYY",V.Local.sDay1)
+		F.Intrinsic.String.Format(V.Local.sDay2,"M/D/YYYY",V.Local.sDay2)
+		F.Intrinsic.String.Format(V.Local.sDay3,"M/D/YYYY",V.Local.sDay3)
+		F.Intrinsic.String.Format(V.Local.sDay4,"M/D/YYYY",V.Local.sDay4)
+		F.Intrinsic.String.Format(V.Local.sDay5,"M/D/YYYY",V.Local.sDay5)
+		F.Intrinsic.String.Format(V.Local.sDay6,"M/D/YYYY",V.Local.sDay6)
+		F.Intrinsic.String.Format(V.local.sDay7,"M/D/YYYY",V.Local.sDay7)
+		
+'add dayse to uDays UDT
+		F.Intrinsic.Variable.LoadUDTFromString(V.uGlobal.uDays,"DAY",V.Local.sDay1,V.Ambient.NewLine,"*!*",False)
+		F.Intrinsic.Variable.LoadUDTFromString(V.uGlobal.uDays,"DAY",V.Local.sDay2,V.Ambient.NewLine,"*!*",True)
+		F.Intrinsic.Variable.LoadUDTFromString(V.uGlobal.uDays,"DAY",V.Local.sDay3,V.Ambient.NewLine,"*!*",True)
+		F.Intrinsic.Variable.LoadUDTFromString(V.uGlobal.uDays,"DAY",V.Local.sDay4,V.Ambient.NewLine,"*!*",True)
+		F.Intrinsic.Variable.LoadUDTFromString(V.uGlobal.uDays,"DAY",V.Local.sDay5,V.Ambient.NewLine,"*!*",True)
+		F.Intrinsic.Variable.LoadUDTFromString(V.uGlobal.uDays,"DAY",V.Local.sDay6,V.Ambient.NewLine,"*!*",True)
+		F.Intrinsic.Variable.LoadUDTFromString(V.uGlobal.uDays,"DAY",V.Local.sDay7,V.Ambient.NewLine,"*!*",True)
+		F.Intrinsic.Variable.UDTMultiQuickSort(V.uGlobal.uDays!DAY,0)
+		
+'load holiday schedule to UDT
+		V.Local.i.Set(1)
+		F.Intrinsic.Control.For(V.Local.i,1,30,1)
+		F.Intrinsic.String.Concat("select HOLIDAY_",V.local.i,"  from V_HOLIDAY_SCHED",,V.Local.sSql)
+		F.ODBC.Connection!conX.OpenRecordsetRO("rst2",V.Local.sSql)
+		F.Intrinsic.String.Concat("HOLIDAY_",V.Local.i,V.Local.sRet)
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uHols!HOL,V.Local.sRet)
+		F.Intrinsic.Variable.LoadUDTFromRecordset("conX","rst2","v.uGlobal.uHols",True)
+		F.ODBC.conX!rst2.Close
+		F.Intrinsic.Control.Next(V.Local.i)
+
+'get rid of empty holiday dates
+		F.Intrinsic.Variable.UDTSeek(V.uGlobal.uHols!HOL,"1/1/1900",1,V.Local.sRet)
+		F.Intrinsic.Variable.udtflagordinal(V.uGlobal.uHols,True,V.Local.sRet)
+		F.Intrinsic.Variable.UDTDeleteFlagged(V.uGlobal.uHols)
+		F.Intrinsic.Variable.UDTMultiQuickSort(V.uGlobal.uHols!HOL,0)
+		
+'loop through uDays and and uDetail and compare to holidays if charge_date = Holiday then add 8 hours and save to uReport
+		V.Local.i.Set(-1)
+		V.Local.i2.Set(-1)
+		F.Intrinsic.Control.For(V.Local.i,0,V.uGlobal.uDetail.UBound,1)
+			F.Intrinsic.Control.For(V.Local.i2,0,V.uGlobal.uHols.UBound,1)
+				F.Intrinsic.Control.If(V.uGlobal.uDetail(v.Local.i)!charge_date,=,V.uGlobal.uHols(v.Local.i2)!HOL)
+					V.Local.iHrs.Set(V.uGlobal.uDetail(v.Local.i)!tot_hrs)
+					F.Intrinsic.Math.Add(V.Local.iHrs,8,V.Local.iHrs)
+					V.uGlobal.uDetail(v.Local.i)!tot_hrs.Set(V.Local.iHrs)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.Next(V.Local.i2)
+		F.Intrinsic.Control.Next(V.Local.i)
+		F.Intrinsic.String.Concat("EMPL*!*EMP_NAME*!*DAY1*!*DAY1_HOURS*!*DAY2*!*DAY2_HOURS*!*DAY3*!*DAY3_HOURS*!*DAY4*!*DAY4_HOURS*!*DAY5*!*DAY5_HOURS*!*DAY6*!*DAY6_HOURS*!*DAY7*!*DAY7_HOURS",,V.Local.sReportParams)
+'		F.Intrinsic.Debug.Stop
+
+		V.Local.i.Set(-1)
+		V.Local.i2.Set(-1)
+		F.Intrinsic.Control.For(V.Local.i,0,V.uGlobal.uDetail.UBound,1)
+			V.Local.sReportVals.Set("")
+			V.Local.sEmpl.Set(V.uGlobal.uDetail(v.Local.i)!empl)
+			V.Local.sEmployee.Set(V.uGlobal.uDetail(v.Local.i)!employee)
+			F.Intrinsic.Variable.UDTCopy(V.uGlobal.uDetail,V.uGlobal.uDetCopy,False)
+			F.Intrinsic.Variable.UDTFlagAll(V.uGlobal.uDetCopy)
+			F.Intrinsic.Variable.UDTMultiUnFlag(V.uGlobal.uDetCopy!empl,V.Local.sEmpl)
+			F.Intrinsic.Variable.UDTDeleteFlagged(V.uGlobal.uDetCopy)
+			F.Intrinsic.Variable.UDTMultiFlag(V.uGlobal.uDetail!empl,V.Local.sEmpl)
+			F.Intrinsic.Variable.UDTDeleteFlagged(V.uGlobal.uDetail)
+			F.Intrinsic.Variable.UDTMultiQuickSort(V.uGlobal.uDetCopy!charge_date,0)
+
+			F.Intrinsic.String.Concat(V.Local.sEmpl,"*!*",V.Local.sEmployee,V.Local.sReportVals)
+			
+			F.Intrinsic.Variable.UDTSeek(V.uGlobal.uDetCopy!charge_date,V.Local.sDay1,4,V.Local.sRet)
+			F.Intrinsic.Control.If(V.Local.sRet,<>,"")
+				F.Intrinsic.Math.ConvertToLong(V.Local.sRet,V.Local.iRet)
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!charge_date,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!tot_hrs,V.Local.sReportVals)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.Local.sDay1,"*!*",0,V.Local.sReportVals)
+			F.Intrinsic.Control.EndIf
+
+			F.Intrinsic.Variable.UDTSeek(V.uGlobal.uDetCopy!charge_date,V.Local.sDay2,4,V.Local.sRet)
+			F.Intrinsic.Control.If(V.Local.sRet,<>,"")
+				F.Intrinsic.Math.ConvertToLong(V.Local.sRet,V.Local.iRet)
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!charge_date,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!tot_hrs,V.Local.sReportVals)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.Local.sDay2,"*!*",0,V.Local.sReportVals)
+			F.Intrinsic.Control.EndIf
+
+			F.Intrinsic.Variable.UDTSeek(V.uGlobal.uDetCopy!charge_date,V.Local.sDay3,4,V.Local.sRet)
+			F.Intrinsic.Control.If(V.Local.sRet,<>,"")
+				F.Intrinsic.Math.ConvertToLong(V.Local.sRet,V.Local.iRet)
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!charge_date,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!tot_hrs,V.Local.sReportVals)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.Local.sDay3,"*!*",0,V.Local.sReportVals)
+			F.Intrinsic.Control.EndIf
+				
+			F.Intrinsic.Variable.UDTSeek(V.uGlobal.uDetCopy!charge_date,V.Local.sDay4,4,V.Local.sRet)
+			F.Intrinsic.Control.If(V.Local.sRet,<>,"")
+				F.Intrinsic.Math.ConvertToLong(V.Local.sRet,V.Local.iRet)
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!charge_date,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!tot_hrs,V.Local.sReportVals)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.Local.sDay4,"*!*",0,V.Local.sReportVals)
+			F.Intrinsic.Control.EndIf
+
+			F.Intrinsic.Variable.UDTSeek(V.uGlobal.uDetCopy!charge_date,V.Local.sDay5,4,V.Local.sRet)
+			F.Intrinsic.Control.If(V.Local.sRet,<>,"")
+				F.Intrinsic.Math.ConvertToLong(V.Local.sRet,V.Local.iRet)
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!charge_date,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!tot_hrs,V.Local.sReportVals)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.Local.sDay5,"*!*",0,V.Local.sReportVals)
+			F.Intrinsic.Control.EndIf
+
+			F.Intrinsic.Variable.UDTSeek(V.uGlobal.uDetCopy!charge_date,V.Local.sDay6,4,V.Local.sRet)
+			F.Intrinsic.Control.If(V.Local.sRet,<>,"")
+				F.Intrinsic.Math.ConvertToLong(V.Local.sRet,V.Local.iRet)
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!charge_date,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!tot_hrs,V.Local.sReportVals)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.Local.sDay6,"*!*",0,V.Local.sReportVals)
+			F.Intrinsic.Control.EndIf
+
+			F.Intrinsic.Variable.UDTSeek(V.uGlobal.uDetCopy!charge_date,V.Local.sDay7,4,V.Local.sRet)
+			F.Intrinsic.Control.If(V.Local.sRet,<>,"")
+				F.Intrinsic.Math.ConvertToLong(V.Local.sRet,V.Local.iRet)
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!charge_date,"*!*",V.uGlobal.uDetCopy(v.Local.iRet)!tot_hrs,V.Local.sReportVals)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Concat(V.Local.sReportVals,"*!*",V.Local.sDay7,"*!*",0,V.Local.sReportVals)
+			F.Intrinsic.Control.EndIf
+
+			F.Intrinsic.Variable.LoadUDTFromString(V.uGlobal.uReport,V.Local.sReportParams,V.Local.sReportVals,V.Ambient.NewLine,"*!*",True)
+			F.Intrinsic.Variable.UDTFlagAll(V.uGlobal.uDetCopy)
+			F.Intrinsic.Variable.UDTDeleteFlagged(V.uGlobal.uDetCopy)
+			V.uGlobal.uDetCopy.Redim(-1,-1)
+		F.Intrinsic.Control.Next(V.Local.i)
+
+
+		F.Intrinsic.Variable.UDTMultiQuickSort(V.uGlobal.uReport!EMPL,False)
+		
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!BIRUNID,"BIRUNID")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!EMPL,"EMPL")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!EMP_NAME,"EMP_NAME")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY1,"DAY_1")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY1_HOURS,"DAY_1_HRS")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY2,"DAY_2")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY2_HOURS,"DAY_2_HRS")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY3,"DAY_3")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY3_HOURS,"DAY_3_HRS")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY4,"DAY_4")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY4_HOURS,"DAY_4_HRS")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY5,"DAY_5")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY5_HOURS,"DAY_5_HRS")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY6,"DAY_6")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY6_HOURS,"DAY_6_HRS")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY7,"DAY_7")
+		F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uReport!DAY7_HOURS,"DAY_7_HRS")
+		F.Intrinsic.Variable.UDTSetMemberValue(V.uGlobal.uReport!BIRUNID,V.Global.iBIRunID)
+		F.ODBC.Connection!conX.OpenRecordsetRW("rst","select * from GCG_3980_EMPL_TIME")
+		F.Intrinsic.Variable.SaveUDTToRecordset("conX","rst","v.uGlobal.uReport")
+
+		F.Global.BI.StopLogging(v.Global.BILogID)
+		F.Intrinsic.UI.CloseWaitDialog
+		F.Intrinsic.Control.CallSub(Callbi)
+
+	F.Intrinsic.Control.Else
+		F.ODBC.conX!rst.Close
+		F.Intrinsic.UI.CloseWaitDialog
+		F.Intrinsic.ui.Msgbox("No Records exist between this date selection","")
+		Gui.Form1..Show
+		F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+'test
+F.Intrinsic.Control.End
+
+		
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdprint_click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3980_LMD_EMP_TIME.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Form1_unload)
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.cmdprint_click.end
+
+Program.Sub.CallBI.Start
+F.Intrinsic.Control.SetErrorHandler("CallBI_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+V.Local.iRet.Declare(String)
+V.Local.sParams.Declare(String)
+V.Local.sParamValues.Declare(String)
+
+V.Local.sParams.Set("BIRUNID")
+V.Local.sParamValues.Set(V.Global.iBIRunID)
+F.Intrinsic.Debug.DumpVariableList
+F.Global.BI.RunReportPreProcessor(V.Global.iBIRunID,V.Global.iBILogID,V.Local.sParams,V.Local.sParamValues,"",-1,True,"",-1,"",-1,"","",V.Local.iRet)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("CallBI_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3980_LMD_EMP_TIME.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Form1_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.CallBI.End
+
+program.sub.datepickerbegdate_change.start
+F.Intrinsic.Control.SetErrorHandler("datepickerbegdate_change_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.dBDate.Declare(Date)
+V.Local.dEDate.Declare(Date)
+
+F.Intrinsic.Date.beginningofWeek(V.Screen.Form1!datepickerBegDate.Value,V.Local.dBDate)
+F.Intrinsic.Date.endofweek(V.Screen.Form1!datepickerBegDate.Value,V.Local.dEDate)
+
+Gui.Form1.datepickerBegDate.Value(V.Local.dBDate)
+Gui.Form1.datepickerEndDate.Value(V.Local.dEDate)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("datepickerbegdate_change_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3980_LMD_EMP_TIME.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.datepickerbegdate_change.end
+
+program.sub.datepickerenddate_change.start
+F.Intrinsic.Control.SetErrorHandler("datepickerenddate_change_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.dBDate.Declare(Date)
+V.Local.dEDate.Declare(Date)
+
+F.Intrinsic.Date.beginningofweek(V.Screen.Form1!datepickerEndDate.Value,V.Local.dBDate)
+F.Intrinsic.date.endofweek(V.Screen.Form1!datepickerEndDate.Value,V.Local.dEDate)
+
+Gui.Form1.datepickerBegDate.Value(V.Local.dBDate)
+Gui.Form1.datepickerEndDate.Value(V.Local.dEDate)
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("datepickerenddate_change_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3980_LMD_EMP_TIME.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.datepickerenddate_change.end
+
+Program.Sub.Comments.Start
+${$0$}$GCG_LMD_EMP_TIME$}$SFF$}$7/3/2014
+Program.Sub.Comments.End
+
